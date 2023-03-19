@@ -57,7 +57,11 @@ class DataBaseInteractor:
 
     def add_investment_if_not_present(self, investment_name: str, dividend_rate: float, start_val: float, beta: list):
         try:
-            Investments.get(Investments.investment_name == investment_name)
+            stock = Investments.get(Investments.investment_name == investment_name)
+            stock.alpha = alpha
+            stock.beta = beta
+            stock.bias = bias
+            stock.save()
         except Investments.DoesNotExist:
             alpha, beta, bias = beta
             Investments.create(investment_name=investment_name, dividend_rate=max(0, dividend_rate), 
