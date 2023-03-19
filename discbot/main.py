@@ -1,5 +1,3 @@
-from datetime import datetime, time, timedelta
-import asyncio
 import discord
 from discord.ext import commands, tasks
 import json
@@ -54,7 +52,7 @@ async def market(ctx):
         message += f"{stock.investmentid}: {stock.investment_name} @ {stock.value:.2f} ANS ({stock.dividend_rate}) \n"
     await ctx.send(message)
 
-@tasks.loop(seconds=10)
+@tasks.loop(hours=6)
 async def update_stocks():
     await payouts()
     channel = bot.get_channel(int(config['channelid']))
@@ -117,24 +115,6 @@ async def leaderboard(ctx):
 @bot.listen()
 async def on_ready():
     update_stocks.start()
-
-
-# async def background_task_payout():
-#     now = datetime.utcnow()
-#     if now.time() > time(9, 0, 0):  # Make sure loop doesn't start after {WHEN} as then it will send immediately the first time as negative seconds will make the sleep yield instantly
-#         tomorrow = datetime.combine(now.date() + timedelta(days=1), time(0))
-#         seconds = (tomorrow - now).total_seconds()  # Seconds until tomorrow (midnight)
-#         await asyncio.sleep(seconds)   # Sleep until tomorrow and then the loop will start 
-#     while True:
-#         now = datetime.utcnow() # You can do now() or a specific timezone if that matters, but I'll leave it with utcnow
-#         target_time = datetime.combine(now.date(), time(9, 0, 0))  # 6:00 PM today (In UTC)
-#         seconds_until_target = (target_time - now).total_seconds()
-#         await asyncio.sleep(seconds_until_target)  # Sleep until we hit the target time
-#         invest.assign_payouts(dbtool)
-#         await update_stocks()  # Call the helper function that sends the message
-#         tomorrow = datetime.combine(now.date() + timedelta(days=1), time(0))
-#         seconds = (tomorrow - now).total_seconds()  # Seconds until tomorrow (midnight)
-#         await asyncio.sleep(seconds)   # Sleep until tomorrow and then the loop will start a new iteration
 
 # Run the bot
 invest.set_investments(dbtool, config['investments'])

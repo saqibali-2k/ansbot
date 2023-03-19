@@ -23,7 +23,7 @@
     {
         "name": "AnsAirways",
         "start": 6,
-        "beta": [1.6, 5.2, 0.83],
+        "beta": [8, 8, 0.51],
         "dividend": 0.001
     },
 

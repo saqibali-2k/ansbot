@@ -1,6 +1,5 @@
 from peewee import * 
 from dotenv import dotenv_values
-from os.path import exists
 
 config = dotenv_values('.env')
 db = SqliteDatabase(config['database'])
