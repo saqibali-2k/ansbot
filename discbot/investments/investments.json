@@ -1,0 +1,50 @@
+[
+    {
+        "name": "AnsCoin",
+        "start": 5,
+        "beta": [2.793, 1.132, 0.36],
+        "dividend": 0.000125
+    },
+
+    {
+        "name": "AnsMart",
+        "start": 10,
+        "beta": [8, 8, 0.53],
+        "dividend": 0.001
+    },
+
+    {
+        "name": "Ans Micro Devices",
+        "start": 7,
+        "beta": [5, 5, 0.53],
+        "dividend": 0.002
+    },
+
+    {
+        "name": "AnsAirways",
+        "start": 6,
+        "beta": [1.6, 5.2, 0.83],
+        "dividend": 0.001
+    },
+
+    {
+        "name": "TeslAns",
+        "start": 3,
+        "beta": [71.63, 5.4, 0.1],
+        "dividend": 0
+    },
+
+    {
+        "name": "AnsBank",
+        "start": 8,
+        "beta": [132, 3.5, 0.05],
+        "dividend": 0.005
+    },
+
+    {
+        "name": "AnsFuel",
+        "start": 13,
+        "beta": [11.41, 1.739, 0.16],
+        "dividend": 0.0012
+    }
+]
