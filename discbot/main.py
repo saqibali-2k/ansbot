@@ -73,13 +73,14 @@ async def update_stocks():
 
 @bot.command()
 async def man_update(ctx):
-    await payouts()
-    channel = bot.get_channel(int(config['channelid']))
-    logs = invest.update_stocks(dbtool)
-    message = "Updates: \n"
-    for stock, change in logs.items():
-        prev, now = change
-        message += f"{stock}: {prev:.2f} -> {now:.2f} \n"
+    if await authenticate(ctx):
+        await payouts()
+        channel = bot.get_channel(int(config['channelid']))
+        logs = invest.update_stocks(dbtool)
+        message = "Updates: \n"
+        for stock, change in logs.items():
+            prev, now = change
+            message += f"{stock}: {prev:.2f} -> {now:.2f} \n"
     await channel.send(message)
 
 async def payouts():
