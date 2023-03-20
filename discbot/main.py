@@ -102,7 +102,7 @@ async def holdings(ctx, user: discord.Member=None):
     await ctx.send(message)
 
 @bot.command()
-async def sell(ctx, investmentid: int, amount: int):
+async def sell(ctx, investmentid: int, amount: float):
     if amount <= 0:
         return
     ret = dbtool.sell_stock(ctx.author.id, investmentid, amount)
