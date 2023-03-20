@@ -78,7 +78,7 @@ async def payouts():
     await channel.send("Payouts complete!")
 
 @bot.command()
-async def buy(ctx, investmentid: int, numShares: int):
+async def buy(ctx, investmentid: int, numShares: amount):
     ret = dbtool.buy_stock(ctx.author.id, investmentid, numShares)
     if ret == 0:
         await ctx.send("Transaction complete.")
