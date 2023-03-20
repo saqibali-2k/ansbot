@@ -9,7 +9,6 @@ import datetime
 TIMES = [
     datetime.time(hour=13, minute=30, tzinfo=datetime.timezone.utc),
     datetime.time(hour=16, minute=0, tzinfo=datetime.timezone.utc),
-    datetime.time(hour=16, minute=20, tzinfo=datetime.timezone.utc),
     datetime.time(hour=18, minute=30, tzinfo=datetime.timezone.utc),
     datetime.time(hour=21, minute=0, tzinfo=datetime.timezone.utc)
 ]
@@ -63,6 +62,17 @@ async def market(ctx):
 
 @tasks.loop(time=TIMES)
 async def update_stocks():
+    await payouts()
+    channel = bot.get_channel(int(config['channelid']))
+    logs = invest.update_stocks(dbtool)
+    message = "Updates: \n"
+    for stock, change in logs.items():
+        prev, now = change
+        message += f"{stock}: {prev:.2f} -> {now:.2f} \n"
+    await channel.send(message)
+
+@bot.command()
+async def man_update(ctx):
     await payouts()
     channel = bot.get_channel(int(config['channelid']))
     logs = invest.update_stocks(dbtool)
