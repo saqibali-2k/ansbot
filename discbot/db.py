@@ -25,7 +25,7 @@ class Investments(BaseModel):
 class Holdings(BaseModel):
     userid = ForeignKeyField(User, backref='holdings')
     investmentid = ForeignKeyField(Investments, backref='trades')
-    amount = IntegerField('amount > -1')
+    amount = FloatField('amount > -1')
 
 db.create_tables([User, Investments, Holdings])
 
