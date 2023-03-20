@@ -9,6 +9,7 @@ import datetime
 TIMES = [
     datetime.time(hour=13, minute=30, tzinfo=datetime.timezone.utc),
     datetime.time(hour=16, minute=0, tzinfo=datetime.timezone.utc),
+    datetime.time(hour=16, minute=15, tzinfo=datetime.timezone.utc),
     datetime.time(hour=18, minute=30, tzinfo=datetime.timezone.utc),
     datetime.time(hour=21, minute=0, tzinfo=datetime.timezone.utc)
 ]
