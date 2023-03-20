@@ -63,14 +63,13 @@ async def market(ctx):
 @tasks.loop(time=TIMES)
 async def update_stocks():
     await payouts()
-    if 13 < datetime.now().hour < 21:
-        channel = bot.get_channel(int(config['channelid']))
-        logs = invest.update_stocks(dbtool)
-        message = "Updates: \n"
-        for stock, change in logs.items():
-            prev, now = change
-            message += f"{stock}: {prev:.2f} -> {now:.2f} \n"
-        await channel.send(message)
+    channel = bot.get_channel(int(config['channelid']))
+    logs = invest.update_stocks(dbtool)
+    message = "Updates: \n"
+    for stock, change in logs.items():
+        prev, now = change
+        message += f"{stock}: {prev:.2f} -> {now:.2f} \n"
+    await channel.send(message)
 
 async def payouts():
     channel = bot.get_channel(int(config['channelid']))
