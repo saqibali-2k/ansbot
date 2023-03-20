@@ -4,6 +4,14 @@ import json
 from dotenv import dotenv_values
 from investments import invest
 import db
+import datetime
+
+TIMES = [
+    datetime.time(hour=13, minute=30, tzinfo=datetime.timezone.utc),
+    datetime.time(hour=16, minute=0, tzinfo=datetime.timezone.utc),
+    datetime.time(hour=18, minute=30, tzinfo=datetime.timezone.utc),
+    datetime.time(hour=21, minute=0, tzinfo=datetime.timezone.utc)
+]
 
 config = dotenv_values('.env')
 admins = [int(id) for id in json.loads(config['admin'])]
@@ -52,16 +60,17 @@ async def market(ctx):
         message += f"{stock.investmentid}: {stock.investment_name} @ {stock.value:.2f} ANS ({stock.dividend_rate}) \n"
     await ctx.send(message)
 
-@tasks.loop(hours=6)
+@tasks.loop(time=TIMES)
 async def update_stocks():
     await payouts()
-    channel = bot.get_channel(int(config['channelid']))
-    logs = invest.update_stocks(dbtool)
-    message = "Updates: \n"
-    for stock, change in logs.items():
-        prev, now = change
-        message += f"{stock}: {prev:.2f} -> {now:.2f} \n"
-    await channel.send(message)
+    if 13 < datetime.now().hour < 21:
+        channel = bot.get_channel(int(config['channelid']))
+        logs = invest.update_stocks(dbtool)
+        message = "Updates: \n"
+        for stock, change in logs.items():
+            prev, now = change
+            message += f"{stock}: {prev:.2f} -> {now:.2f} \n"
+        await channel.send(message)
 
 async def payouts():
     channel = bot.get_channel(int(config['channelid']))
@@ -72,7 +81,7 @@ async def payouts():
 async def buy(ctx, investmentid: int, numShares: int):
     ret = dbtool.buy_stock(ctx.author.id, investmentid, numShares)
     if ret == 0:
-        await ctx.send("Transation complete.")
+        await ctx.send("Transaction complete.")
     elif ret == 1:
         await ctx.send("You are not in the database.")
     elif ret == 2:
@@ -81,9 +90,11 @@ async def buy(ctx, investmentid: int, numShares: int):
         await ctx.send("Insufficient funds.")
 
 @bot.command()
-async def myholdings(ctx):
-    investments = dbtool.get_investments_by_user(ctx.author.id)
-    message = f"{ctx.author.mention}'s stocks: \n"
+async def holdings(ctx, user: discord.Member=None):
+    if user is None:
+        user = ctx.author 
+    investments = dbtool.get_investments_by_user(user.id)
+    message = f"{user.mention}'s stocks: \n"
     for stock in investments:
         if stock.holdings.amount == 0:
             continue
