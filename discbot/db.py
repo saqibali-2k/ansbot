@@ -62,6 +62,7 @@ class DataBaseInteractor:
             stock.alpha = alpha
             stock.beta = beta
             stock.bias = bias
+            stock.dividend_rate = max(0, dividend_rate)
             stock.save()
         except Investments.DoesNotExist:
             Investments.create(investment_name=investment_name, dividend_rate=max(0, dividend_rate), 

@@ -33,6 +33,16 @@ async def show_points(ctx, name, val):
 
 
 @bot.command()
+async def awardall(ctx, points: int):
+    try:
+        if await authenticate(ctx):
+            for user in dbtool.all_users():
+                dbtool.add_points(user.userid, user.name, points)
+        await ctx.message.add_reaction('✅')
+    except:
+        await ctx.message.add_reaction('❌')
+
+@bot.command()
 async def award(ctx, user: discord.Member, points: int):
     if await authenticate(ctx):
         name = user.nick or user.name
@@ -47,17 +57,29 @@ async def punish(ctx, user: discord.Member, points: int):
         await show_points(ctx, name, newval)
 
 @bot.command()
-async def points(ctx):
+async def points(ctx: commands.Context):
     newval = dbtool.get_points(ctx.author.id)
     name = ctx.author.nick or ctx.author.name
     await show_points(ctx, name, newval)
+
+@bot.command()
+async def send(ctx: commands.Context, user: discord.Member, points: int):
+    to_user  = user.id
+    from_user = ctx.author.id
+    if dbtool.get_points(from_user) < points:
+        await ctx.message.add_reaction('❌')
+        await ctx.message.add_reaction('💰')
+    else:
+        dbtool.remove_points(from_user, ctx.author.nick or ctx.author.name, points)
+        dbtool.add_points(to_user, user.nick or user.name, points)
+        await ctx.message.add_reaction('✅')
 
 @bot.command()
 async def market(ctx):
     stocks = dbtool.get_all_investments()
     message = "Stocks: \n"
     for stock in stocks:
-        message += f"{stock.investmentid}: {stock.investment_name} @ {stock.value:.2f} ANS ({stock.dividend_rate}) \n"
+        message += f"{stock.investmentid}: {stock.investment_name} @ {stock.value:.2f} ANS ({stock.dividend_rate * 100}%) \n"
     await ctx.send(message)
 
 @tasks.loop(time=TIMES)
@@ -72,7 +94,7 @@ async def update_stocks():
     await channel.send(message)
 
 @bot.command()
-async def man_update(ctx):
+async def man_update(ctx: commands.Context):
     if await authenticate(ctx):
         await payouts()
         channel = bot.get_channel(int(config['channelid']))
@@ -89,16 +111,21 @@ async def payouts():
     await channel.send("Payouts complete!")
 
 @bot.command()
-async def buy(ctx, investmentid: int, numShares: float):
+async def buy(ctx: commands.Context, investmentid: int, numShares: float):
     ret = dbtool.buy_stock(ctx.author.id, investmentid, numShares)
     if ret == 0:
-        await ctx.send("Transaction complete.")
+        await ctx.message.add_reaction('✅')
     elif ret == 1:
-        await ctx.send("You are not in the database.")
+        # person not in db
+        await ctx.message.add_reaction('❌')
+        await ctx.message.add_reaction('👶')
     elif ret == 2:
-        await ctx.send("Uknown ID for stock.")
+        # stock not found
+        await ctx.message.add_reaction('❌')
+        await ctx.message.add_reaction('❔')
     elif ret == 3:
-        await ctx.send("Insufficient funds.")
+        await ctx.message.add_reaction('❌')
+        await ctx.message.add_reaction('💰')
 
 @bot.command()
 async def holdings(ctx, user: discord.Member=None):
@@ -118,13 +145,16 @@ async def sell(ctx, investmentid: int, amount: float):
         return
     ret = dbtool.sell_stock(ctx.author.id, investmentid, amount)
     if ret == 0:
-        await ctx.send("Transaction complete.")
+        await ctx.message.add_reaction('✅')
     elif ret == 1:
-        await ctx.send("You are not in the database.")
+        await ctx.message.add_reaction('❌')
+        await ctx.message.add_reaction('👶')
     elif ret == 2:
-        await ctx.send("Incorrect investment ID.")
+        await ctx.message.add_reaction('❌')
+        await ctx.message.add_reaction('❔')
     elif ret == 3:
-        await ctx.send("You don't own this stock.")
+        await ctx.message.add_reaction('❌')
+        await ctx.send("You don't own more of this stock.")
 
 @bot.command()
 async def leaderboard(ctx):
